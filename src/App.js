@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   StyleSheet,
   Text,
+  Button,
   View,
   FlatList,
   TextInput,
@@ -11,7 +12,6 @@ import {
 } from "react-native";
 
 function App() {
-  // its javascript part Pivot number
   var arr = [
     {
       name: "Jack",
@@ -73,26 +73,24 @@ function App() {
   arr.forEach((e) => {
     total += e.netWorth;
   });
-
-  function pivot(index) {
-    for (let e = 0; e < index.length; e++) {
-      if (total - leftSum - index[e].netWorth === leftSum) {
-        return index[e];
+  const [pivots, setPivots] = useState({});
+  const pivot = () => {
+    for (let e = 0; e < arr.length; e++) {
+      if (total - leftSum - arr[e].netWorth === leftSum) {
+        return setPivots(arr[e]);
       }
-      leftSum += index[e].netWorth;
+      leftSum += arr[e].netWorth;
     }
     return -1;
-  }
-  // javascript part ends Here
+  };
+  console.log("jj", pivots);
 
-  // React native part
-  const [data, setData] = useState([]); // for Data
-  const [loading, setLoading] = useState(false); // for loader
-  const [inputState, setInputState] = useState(true); // For input handling
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [inputState, setInputState] = useState(true);
   const onChangeHandle = async (value, key) => {
     let name = value;
     if (name) {
-      // here is checking the previous data in filter
       let isFound = data.filter((e) => e.name === name);
       if (isFound.length === 0) {
         setLoading(true);
@@ -100,7 +98,6 @@ function App() {
         let response = await axios.get(`https://api.agify.io/?name=${name}`);
         let responseData = [];
         if (data) {
-          // pushing data into array to show 
           data.forEach((e) => {
             responseData.push(e);
           });
@@ -117,6 +114,14 @@ function App() {
 
   return (
     <SafeAreaView>
+      <Button onPress={() => pivot()} title="Click To Find Pivot" />
+      <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+        <Text>{pivots.name}</Text>
+        <Text>{pivots.age}</Text>
+        <Text>{pivots.worthUnit}</Text>
+        <Text>{pivots.netWorth}</Text>
+      </View>
+
       <View>
         <TextInput
           style={styles.input}
@@ -164,6 +169,13 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: "lightblue",
     fontFamily: "Roboto"
+  },
+  MainContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FAFAFA",
+    padding: 10
   },
   container: {
     flex: 1,
